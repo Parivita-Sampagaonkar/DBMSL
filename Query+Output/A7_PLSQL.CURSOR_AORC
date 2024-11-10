@@ -1,0 +1,101 @@
+mysql> CREATE DATABASE SchoolAttendance;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE SchoolAttendance;
+Database changed
+mysql> CREATE TABLE O_RollCall (
+    ->     Roll_no INT PRIMARY KEY,
+    ->     Name VARCHAR(100),
+    ->     Class VARCHAR(10),
+    ->     Date DATE
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE N_RollCall (
+    ->     Roll_no INT PRIMARY KEY,
+    ->     Name VARCHAR(100),
+    ->     Class VARCHAR(10),
+    ->     Date DATE
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> INSERT INTO O_RollCall (Roll_no, Name, Class, Date) VALUES
+    ->     (101, 'Alice', '10A', '2023-10-01'),
+    ->     (102, 'Bob', '10A', '2023-10-01'),
+    ->     (103, 'Charlie', '10A', '2023-10-01'),
+    ->     (104, 'David', '10B', '2023-10-01'),
+    ->     (105, 'Eva', '10B', '2023-10-01');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO N_RollCall (Roll_no, Name, Class, Date) VALUES
+    ->     (101, 'Alice', '10A', '2023-10-02'),  -- Duplicate entry
+    ->     (106, 'Frank', '10A', '2023-10-02'),  -- New entry
+    ->     (107, 'Grace', '10B', '2023-10-02'),  -- New entry
+    ->     (103, 'Charlie', '10A', '2023-10-02'), -- Duplicate entry
+    ->     (108, 'Hannah', '10B', '2023-10-02'); -- New entry
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE MergeRollCallData()
+    -> BEGIN
+    ->     DECLARE v_roll_no INT;
+    ->     DECLARE v_name VARCHAR(100);
+    ->     DECLARE v_class VARCHAR(10);
+    ->     DECLARE v_date DATE;
+    ->     DECLARE duplicate_found INT DEFAULT 0;
+    ->
+    ->     -- Declare a cursor to fetch all records from N_RollCall
+    ->     DECLARE n_rollcall_cursor CURSOR FOR
+    ->         SELECT Roll_no, Name, Class, Date FROM N_RollCall;
+    ->
+    ->     -- Declare a handler for when the cursor reaches the end
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET duplicate_found = 1;
+    ->
+    ->     -- Open cursor
+    ->     OPEN n_rollcall_cursor;
+    ->
+    ->     -- Loop through each record in the N_RollCall table
+    ->     fetch_loop: LOOP
+    ->         -- Fetch data from cursor into variables
+    ->         FETCH n_rollcall_cursor INTO v_roll_no, v_name, v_class, v_date;
+    ->
+    ->         -- Exit loop if no more records
+    ->         IF duplicate_found THEN
+    ->             LEAVE fetch_loop;
+    ->         END IF;
+    ->
+    ->         -- Check if the current Roll_no already exists in O_RollCall
+    ->         IF NOT EXISTS (SELECT 1 FROM O_RollCall WHERE Roll_no = v_roll_no) THEN
+    ->             -- If Roll_no does not exist, insert the record into O_RollCall
+    ->             INSERT INTO O_RollCall (Roll_no, Name, Class, Date)
+    ->             VALUES (v_roll_no, v_name, v_class, v_date);
+    ->         END IF;
+    ->     END LOOP;
+    ->
+    ->     -- Close the cursor
+    ->     CLOSE n_rollcall_cursor;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL MergeRollCallData();
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM O_RollCall;
++---------+---------+-------+------------+
+| Roll_no | Name    | Class | Date       |
++---------+---------+-------+------------+
+|     101 | Alice   | 10A   | 2023-10-01 |
+|     102 | Bob     | 10A   | 2023-10-01 |
+|     103 | Charlie | 10A   | 2023-10-01 |
+|     104 | David   | 10B   | 2023-10-01 |
+|     105 | Eva     | 10B   | 2023-10-01 |
+|     106 | Frank   | 10A   | 2023-10-02 |
+|     107 | Grace   | 10B   | 2023-10-02 |
+|     108 | Hannah  | 10B   | 2023-10-02 |
++---------+---------+-------+------------+
+8 rows in set (0.00 sec)
