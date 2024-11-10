@@ -390,3 +390,249 @@ mysql> SELECT * FROM instructor;
 +------+----------------+------------------+-----------+
 7 rows in set (0.00 sec)
 
+mysql> INSERT INTO department (dept_name, building, budget)
+    -> VALUES ('Geology', 'Geo-Building', 15000);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM department;
++------------------+------------------+----------+
+| dept_name        | building         | budget   |
++------------------+------------------+----------+
+| Biology          | Biology Building | 30000.00 |
+| Computer Science | CS Building      | 50000.00 |
+| Geology          | Geo-Building     | 15000.00 |
+| Music            | Music Building   | 12000.00 |
+| Physics          | Physics Building | 25000.00 |
++------------------+------------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT INTO instructor (Id, name, dept_name, salary)
+    -> VALUES ('5001', 'John Doe', 'Music', 18000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+
+| Id   | name           | dept_name        | salary    |
++------+----------------+------------------+-----------+
+| 1001 | Alice Johnson  | Physics          |  95000.00 |
+| 1002 | Bob Smith      | Physics          |  88000.00 |
+| 2001 | Charles Darwin | Biology          |  91000.00 |
+| 2002 | Diana Prince   | Biology          | 105000.00 |
+| 3001 | Evan Turner    | Computer Science | 100000.00 |
+| 3002 | Fay Jackson    | Computer Science | 120000.00 |
+| 4001 | Grace Hopper   | Music            |  18000.00 |
+| 5001 | John Doe       | Music            |  18000.00 |
++------+----------------+------------------+-----------+
+8 rows in set (0.00 sec)
+
+mysql> ALTER TABLE instructor
+    -> ADD joining_date DATE;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc instructor;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| Id           | varchar(10)   | NO   | PRI | NULL    |       |
+| name         | varchar(100)  | YES  |     | NULL    |       |
+| dept_name    | varchar(50)   | YES  | MUL | NULL    |       |
+| salary       | decimal(10,2) | YES  |     | NULL    |       |
+| joining_date | date          | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> UPDATE instructor
+    -> SET joining_date = '2024-01-15'
+    -> WHERE Id = '12121';
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+--------------+
+| Id   | name           | dept_name        | salary    | joining_date |
++------+----------------+------------------+-----------+--------------+
+| 1001 | Alice Johnson  | Physics          |  95000.00 | NULL         |
+| 1002 | Bob Smith      | Physics          |  88000.00 | NULL         |
+| 2001 | Charles Darwin | Biology          |  91000.00 | NULL         |
+| 2002 | Diana Prince   | Biology          | 105000.00 | NULL         |
+| 3001 | Evan Turner    | Computer Science | 100000.00 | NULL         |
+| 3002 | Fay Jackson    | Computer Science | 120000.00 | NULL         |
+| 4001 | Grace Hopper   | Music            |  18000.00 | NULL         |
+| 5001 | John Doe       | Music            |  18000.00 | NULL         |
++------+----------------+------------------+-----------+--------------+
+8 rows in set (0.00 sec)
+
+mysql> UPDATE instructor
+    -> SET joining_date = '2024-01-15'
+    -> WHERE Id = '1001';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+--------------+
+| Id   | name           | dept_name        | salary    | joining_date |
++------+----------------+------------------+-----------+--------------+
+| 1001 | Alice Johnson  | Physics          |  95000.00 | 2024-01-15   |
+| 1002 | Bob Smith      | Physics          |  88000.00 | NULL         |
+| 2001 | Charles Darwin | Biology          |  91000.00 | NULL         |
+| 2002 | Diana Prince   | Biology          | 105000.00 | NULL         |
+| 3001 | Evan Turner    | Computer Science | 100000.00 | NULL         |
+| 3002 | Fay Jackson    | Computer Science | 120000.00 | NULL         |
+| 4001 | Grace Hopper   | Music            |  18000.00 | NULL         |
+| 5001 | John Doe       | Music            |  18000.00 | NULL         |
++------+----------------+------------------+-----------+--------------+
+8 rows in set (0.00 sec)
+
+mysql> ALTER TABLE instructor
+    -> DROP COLUMN joining_date;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc instructor;
++-----------+---------------+------+-----+---------+-------+
+| Field     | Type          | Null | Key | Default | Extra |
++-----------+---------------+------+-----+---------+-------+
+| Id        | varchar(10)   | NO   | PRI | NULL    |       |
+| name      | varchar(100)  | YES  |     | NULL    |       |
+| dept_name | varchar(50)   | YES  | MUL | NULL    |       |
+| salary    | decimal(10,2) | YES  |     | NULL    |       |
++-----------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> UPDATE instructor
+    -> SET salary = salary * 1.05;
+Query OK, 8 rows affected (0.01 sec)
+Rows matched: 8  Changed: 8  Warnings: 0
+
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+
+| Id   | name           | dept_name        | salary    |
++------+----------------+------------------+-----------+
+| 1001 | Alice Johnson  | Physics          |  99750.00 |
+| 1002 | Bob Smith      | Physics          |  92400.00 |
+| 2001 | Charles Darwin | Biology          |  95550.00 |
+| 2002 | Diana Prince   | Biology          | 110250.00 |
+| 3001 | Evan Turner    | Computer Science | 105000.00 |
+| 3002 | Fay Jackson    | Computer Science | 126000.00 |
+| 4001 | Grace Hopper   | Music            |  18900.00 |
+| 5001 | John Doe       | Music            |  18900.00 |
++------+----------------+------------------+-----------+
+8 rows in set (0.00 sec)
+
+mysql> UPDATE instructor
+    -> SET salary = CASE
+    ->     WHEN salary > 1000000 THEN salary * 1.05
+    ->     ELSE salary * 1.03
+    -> END;
+Query OK, 8 rows affected (0.01 sec)
+Rows matched: 8  Changed: 8  Warnings: 0
+
+mysql> DELETE FROM instructor
+    -> WHERE Id = '5001';
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+
+| Id   | name           | dept_name        | salary    |
++------+----------------+------------------+-----------+
+| 1001 | Alice Johnson  | Physics          | 102742.50 |
+| 1002 | Bob Smith      | Physics          |  95172.00 |
+| 2001 | Charles Darwin | Biology          |  98416.50 |
+| 2002 | Diana Prince   | Biology          | 113557.50 |
+| 3001 | Evan Turner    | Computer Science | 108150.00 |
+| 3002 | Fay Jackson    | Computer Science | 129780.00 |
+| 4001 | Grace Hopper   | Music            |  19467.00 |
++------+----------------+------------------+-----------+
+7 rows in set (0.00 sec)
+
+mysql> UPDATE instructor
+    -> SET name = 'New Name'
+    -> WHERE Id = '12345';
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+mysql> UPDATE instructor
+    -> SET name = 'New Name'
+    -> WHERE Id = '3002';
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+
+| Id   | name           | dept_name        | salary    |
++------+----------------+------------------+-----------+
+| 1001 | Alice Johnson  | Physics          | 102742.50 |
+| 1002 | Bob Smith      | Physics          |  95172.00 |
+| 2001 | Charles Darwin | Biology          |  98416.50 |
+| 2002 | Diana Prince   | Biology          | 113557.50 |
+| 3001 | Evan Turner    | Computer Science | 108150.00 |
+| 3002 | New Name       | Computer Science | 129780.00 |
+| 4001 | Grace Hopper   | Music            |  19467.00 |
++------+----------------+------------------+-----------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT name, salary
+    -> FROM instructor
+    -> WHERE salary = (SELECT MAX(salary) FROM instructor);
++----------+-----------+
+| name     | salary    |
++----------+-----------+
+| New Name | 129780.00 |
++----------+-----------+
+1 row in set (0.00 sec)
+
+mysql> DELETE FROM section;
+Query OK, 7 rows affected (0.01 sec)
+
+mysql> SELECT * FROM section;
+Empty set (0.00 sec)
+
+mysql> SELECT name, salary
+    -> FROM instructor
+    -> WHERE salary < (SELECT AVG(salary) FROM instructor);
++--------------+----------+
+| name         | salary   |
++--------------+----------+
+| Bob Smith    | 95172.00 |
+| Grace Hopper | 19467.00 |
++--------------+----------+
+2 rows in set (0.00 sec)
+
+mysql> DELETE FROM teaches
+    -> WHERE Id = '15151';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELETE FROM teaches
+    -> WHERE Id = '1001';
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM section;
+Empty set (0.00 sec)
+
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+
+| Id   | name           | dept_name        | salary    |
++------+----------------+------------------+-----------+
+| 1001 | Alice Johnson  | Physics          | 102742.50 |
+| 1002 | Bob Smith      | Physics          |  95172.00 |
+| 2001 | Charles Darwin | Biology          |  98416.50 |
+| 2002 | Diana Prince   | Biology          | 113557.50 |
+| 3001 | Evan Turner    | Computer Science | 108150.00 |
+| 3002 | New Name       | Computer Science | 129780.00 |
+| 4001 | Grace Hopper   | Music            |  19467.00 |
++------+----------------+------------------+-----------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT * FROM teaches;
++------+-----------+------------+----------+------+
+| Id   | course_id | section_id | semester | year |
++------+-----------+------------+----------+------+
+| 2001 | BIO101    | S01        | Winter   | 2023 |
+| 2002 | BIO102    | S01        | Summer   | 2023 |
+| 3001 | CS101     | S01        | Winter   | 2023 |
+| 3002 | CS102     | S02        | Summer   | 2023 |
+| 4001 | MU101     | S01        | Winter   | 2023 |
+| 1002 | PH102     | S02        | Summer   | 2023 |
++------+-----------+------------+----------+------+
+6 rows in set (0.00 sec)
