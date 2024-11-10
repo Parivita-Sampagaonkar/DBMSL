@@ -1,0 +1,392 @@
+mysql> CREATE DATABASE University;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE University;
+Database changed
+mysql> CREATE TABLE department (
+    ->     dept_name VARCHAR(50) PRIMARY KEY,
+    ->     building VARCHAR(50),
+    ->     budget DECIMAL(10, 2)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc department
+    -> ;
++-----------+---------------+------+-----+---------+-------+
+| Field     | Type          | Null | Key | Default | Extra |
++-----------+---------------+------+-----+---------+-------+
+| dept_name | varchar(50)   | NO   | PRI | NULL    |       |
+| building  | varchar(50)   | YES  |     | NULL    |       |
+| budget    | decimal(10,2) | YES  |     | NULL    |       |
++-----------+---------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> CREATE TABLE course (
+    ->     course_id VARCHAR(10) PRIMARY KEY,
+    ->     title VARCHAR(100),
+    ->     dept_name VARCHAR(50),
+    ->     credits INT,
+    ->     FOREIGN KEY (dept_name) REFERENCES department(dept_name)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> desc course;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| course_id | varchar(10)  | NO   | PRI | NULL    |       |
+| title     | varchar(100) | YES  |     | NULL    |       |
+| dept_name | varchar(50)  | YES  | MUL | NULL    |       |
+| credits   | int          | YES  |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> CREATE TABLE instructor (
+    ->     Id VARCHAR(10) PRIMARY KEY,
+    ->     name VARCHAR(100),
+    ->     dept_name VARCHAR(50),
+    ->     salary DECIMAL(10, 2),
+    ->     FOREIGN KEY (dept_name) REFERENCES department(dept_name)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> desc instructor;
++-----------+---------------+------+-----+---------+-------+
+| Field     | Type          | Null | Key | Default | Extra |
++-----------+---------------+------+-----+---------+-------+
+| Id        | varchar(10)   | NO   | PRI | NULL    |       |
+| name      | varchar(100)  | YES  |     | NULL    |       |
+| dept_name | varchar(50)   | YES  | MUL | NULL    |       |
+| salary    | decimal(10,2) | YES  |     | NULL    |       |
++-----------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> CREATE TABLE section (
+    ->     course_id VARCHAR(10),
+    ->     section_id VARCHAR(10),
+    ->     semester VARCHAR(10),
+    ->     year INT,
+    ->     building VARCHAR(50),
+    ->     room_no VARCHAR(10),
+    ->     time_slot VARCHAR(20),
+    ->     PRIMARY KEY (course_id, section_id, semester, year),
+    ->     FOREIGN KEY (course_id) REFERENCES course(course_id)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc section;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| course_id  | varchar(10) | NO   | PRI | NULL    |       |
+| section_id | varchar(10) | NO   | PRI | NULL    |       |
+| semester   | varchar(10) | NO   | PRI | NULL    |       |
+| year       | int         | NO   | PRI | NULL    |       |
+| building   | varchar(50) | YES  |     | NULL    |       |
+| room_no    | varchar(10) | YES  |     | NULL    |       |
+| time_slot  | varchar(20) | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql> CREATE TABLE teaches (
+    ->     Id VARCHAR(10),
+    ->     course_id VARCHAR(10),
+    ->     section_id VARCHAR(10),
+    ->     semester VARCHAR(10),
+    ->     year INT,
+    ->     PRIMARY KEY (Id, course_id, section_id, semester, year),
+    ->     FOREIGN KEY (Id) REFERENCES instructor(Id),
+    ->     FOREIGN KEY (course_id) REFERENCES course(course_id)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> desc teaches;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| Id         | varchar(10) | NO   | PRI | NULL    |       |
+| course_id  | varchar(10) | NO   | PRI | NULL    |       |
+| section_id | varchar(10) | NO   | PRI | NULL    |       |
+| semester   | varchar(10) | NO   | PRI | NULL    |       |
+| year       | int         | NO   | PRI | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT INTO instructor (Id, name, dept_name, salary)
+    -> VALUES
+    -> ('Physics', 'Physics Building', 25000),
+    ->     ('Biology', 'Biology Building', 30000),
+    ->     ('Computer Science', 'CS Building', 50000),
+    ->     ('Geology', 'Geo Building', 15000),
+    ->     ('Music', 'Music Building', 12000);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> INSERT INTO department (dept_name, building, budget)
+    -> VALUES
+    -> ('Physics', 'Physics Building', 25000),
+    ->     ('Biology', 'Biology Building', 30000),
+    ->     ('Computer Science', 'CS Building', 50000),
+    ->     ('Geology', 'Geo Building', 15000),
+    ->     ('Music', 'Music Building', 12000);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> show department;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'department' at line 1
+mysql> SELECT * FROM department;
++------------------+------------------+----------+
+| dept_name        | building         | budget   |
++------------------+------------------+----------+
+| Biology          | Biology Building | 30000.00 |
+| Computer Science | CS Building      | 50000.00 |
+| Geology          | Geo Building     | 15000.00 |
+| Music            | Music Building   | 12000.00 |
+| Physics          | Physics Building | 25000.00 |
++------------------+------------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT INTO instructor (Id, name, dept_name, salary)
+    -> VALUES
+    -> ('1001', 'Alice Johnson', 'Physics', 95000),
+    ->     ('1002', 'Bob Smith', 'Physics', 88000),
+    ->     ('2001', 'Charles Darwin', 'Biology', 91000),
+    ->     ('2002', 'Diana Prince', 'Biology', 105000),
+    ->     ('3001', 'Evan Turner', 'Computer Science', 100000),
+    ->     ('3002', 'Fay Jackson', 'Computer Science', 120000),
+    ->     ('4001', 'Grace Hopper', 'Music', 18000),
+    ->     ('4002', 'Helen Wong', 'Geology', 85000);
+Query OK, 8 rows affected (0.00 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+
+| Id   | name           | dept_name        | salary    |
++------+----------------+------------------+-----------+
+| 1001 | Alice Johnson  | Physics          |  95000.00 |
+| 1002 | Bob Smith      | Physics          |  88000.00 |
+| 2001 | Charles Darwin | Biology          |  91000.00 |
+| 2002 | Diana Prince   | Biology          | 105000.00 |
+| 3001 | Evan Turner    | Computer Science | 100000.00 |
+| 3002 | Fay Jackson    | Computer Science | 120000.00 |
+| 4001 | Grace Hopper   | Music            |  18000.00 |
+| 4002 | Helen Wong     | Geology          |  85000.00 |
++------+----------------+------------------+-----------+
+8 rows in set (0.00 sec)
+
+mysql> INSERT INTO course (course_id, title, dept_name, credits) VALUES
+    ->     ('PH101', 'Quantum Mechanics', 'Physics', 4),
+    ->     ('PH102', 'Classical Mechanics', 'Physics', 3),
+    ->     ('BIO101', 'Genetics', 'Biology', 4),
+    ->     ('BIO102', 'Ecology', 'Biology', 3),
+    ->     ('CS101', 'Algorithms', 'Computer Science', 4),
+    ->     ('CS102', 'Databases', 'Computer Science', 3),
+    ->     ('MU101', 'Music Theory', 'Music', 2),
+    ->     ('MU102', 'Music History', 'Music', 3);
+Query OK, 8 rows affected (0.01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM course;
++-----------+---------------------+------------------+---------+
+| course_id | title               | dept_name        | credits |
++-----------+---------------------+------------------+---------+
+| BIO101    | Genetics            | Biology          |       4 |
+| BIO102    | Ecology             | Biology          |       3 |
+| CS101     | Algorithms          | Computer Science |       4 |
+| CS102     | Databases           | Computer Science |       3 |
+| MU101     | Music Theory        | Music            |       2 |
+| MU102     | Music History       | Music            |       3 |
+| PH101     | Quantum Mechanics   | Physics          |       4 |
+| PH102     | Classical Mechanics | Physics          |       3 |
++-----------+---------------------+------------------+---------+
+8 rows in set (0.00 sec)
+
+mysql> INSERT INTO section (course_id, section_id, semester, year, building, room_no, time_slot) VALUES
+    ->     ('PH101', 'S01', 'Winter', 2023, 'Physics Building', '101', '09:00-10:30'),
+    ->     ('PH102', 'S02', 'Summer', 2023, 'Physics Building', '102', '11:00-12:30'),
+    ->     ('BIO101', 'S01', 'Winter', 2023, 'Biology Building', '201', '13:00-14:30'),
+    ->     ('BIO102', 'S01', 'Summer', 2023, 'Biology Building', '202', '15:00-16:30'),
+    ->     ('CS101', 'S01', 'Winter', 2023, 'CS Building', '301', '10:00-11:30'),
+    ->     ('CS102', 'S02', 'Summer', 2023, 'CS Building', '302', '12:00-13:30'),
+    ->     ('MU101', 'S01', 'Winter', 2023, 'Music Building', '401', '09:00-10:30');
+Query OK, 7 rows affected (0.00 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM section;
++-----------+------------+----------+------+------------------+---------+-------------+
+| course_id | section_id | semester | year | building         | room_no | time_slot   |
++-----------+------------+----------+------+------------------+---------+-------------+
+| BIO101    | S01        | Winter   | 2023 | Biology Building | 201     | 13:00-14:30 |
+| BIO102    | S01        | Summer   | 2023 | Biology Building | 202     | 15:00-16:30 |
+| CS101     | S01        | Winter   | 2023 | CS Building      | 301     | 10:00-11:30 |
+| CS102     | S02        | Summer   | 2023 | CS Building      | 302     | 12:00-13:30 |
+| MU101     | S01        | Winter   | 2023 | Music Building   | 401     | 09:00-10:30 |
+| PH101     | S01        | Winter   | 2023 | Physics Building | 101     | 09:00-10:30 |
+| PH102     | S02        | Summer   | 2023 | Physics Building | 102     | 11:00-12:30 |
++-----------+------------+----------+------+------------------+---------+-------------+
+7 rows in set (0.00 sec)
+
+mysql> INSERT INTO teaches (Id, course_id, section_id, semester, year) VALUES
+    ->     ('1001', 'PH101', 'S01', 'Winter', 2023),
+    ->     ('1002', 'PH102', 'S02', 'Summer', 2023),
+    ->     ('2001', 'BIO101', 'S01', 'Winter', 2023),
+    ->     ('2002', 'BIO102', 'S01', 'Summer', 2023),
+    ->     ('3001', 'CS101', 'S01', 'Winter', 2023),
+    ->     ('3002', 'CS102', 'S02', 'Summer', 2023),
+    ->     ('4001', 'MU101', 'S01', 'Winter', 2023);
+Query OK, 7 rows affected (0.00 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM teaches;
++------+-----------+------------+----------+------+
+| Id   | course_id | section_id | semester | year |
++------+-----------+------------+----------+------+
+| 2001 | BIO101    | S01        | Winter   | 2023 |
+| 2002 | BIO102    | S01        | Summer   | 2023 |
+| 3001 | CS101     | S01        | Winter   | 2023 |
+| 3002 | CS102     | S02        | Summer   | 2023 |
+| 4001 | MU101     | S01        | Winter   | 2023 |
+| 1001 | PH101     | S01        | Winter   | 2023 |
+| 1002 | PH102     | S02        | Summer   | 2023 |
++------+-----------+------------+----------+------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT name
+    -> FROM instructor
+    -> WHERE dept_name = 'Physics'
+    -> ORDER BY name ASC;
++---------------+
+| name          |
++---------------+
+| Alice Johnson |
+| Bob Smith     |
++---------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT *
+    -> FROM instructor
+    -> ORDER BY salary DESC;
++------+----------------+------------------+-----------+
+| Id   | name           | dept_name        | salary    |
++------+----------------+------------------+-----------+
+| 3002 | Fay Jackson    | Computer Science | 120000.00 |
+| 2002 | Diana Prince   | Biology          | 105000.00 |
+| 3001 | Evan Turner    | Computer Science | 100000.00 |
+| 1001 | Alice Johnson  | Physics          |  95000.00 |
+| 2001 | Charles Darwin | Biology          |  91000.00 |
+| 1002 | Bob Smith      | Physics          |  88000.00 |
+| 4002 | Helen Wong     | Geology          |  85000.00 |
+| 4001 | Grace Hopper   | Music            |  18000.00 |
++------+----------------+------------------+-----------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT name
+    -> FROM instructor
+    -> WHERE salary BETWEEN 90000 AND 100000;
++----------------+
+| name           |
++----------------+
+| Alice Johnson  |
+| Charles Darwin |
+| Evan Turner    |
++----------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT DISTINCT instructor.name, course.title
+    -> FROM instructor
+    -> JOIN teaches ON instructor.Id = teaches.Id
+    -> JOIN course ON teaches.course_id = course.course_id
+    -> WHERE instructor.dept_name = 'Biology';
++----------------+----------+
+| name           | title    |
++----------------+----------+
+| Charles Darwin | Genetics |
+| Diana Prince   | Ecology  |
++----------------+----------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT DISTINCT course_id
+    -> FROM section
+    -> WHERE semester IN ('Summer', 'Winter');
++-----------+
+| course_id |
++-----------+
+| BIO101    |
+| BIO102    |
+| CS101     |
+| CS102     |
+| MU101     |
+| PH101     |
+| PH102     |
++-----------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT AVG(salary) AS avg_salary
+    -> FROM instructor
+    -> WHERE dept_name = 'Computer Science';
++---------------+
+| avg_salary    |
++---------------+
+| 110000.000000 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT COUNT(DISTINCT Id) AS total_instructors
+    -> FROM teaches
+    -> WHERE semester = 'Winter';
++-------------------+
+| total_instructors |
++-------------------+
+|                 4 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT AVG(salary) AS avg_salary
+    -> FROM instructor;
++--------------+
+| avg_salary   |
++--------------+
+| 87750.000000 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> DELETE FROM department
+    -> WHERE dept_name = 'Geology' AND budget = 15000;
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`university`.`instructor`, CONSTRAINT `instructor_ibfk_1` FOREIGN KEY (`dept_name`) REFERENCES `department` (`dept_name`))
+mysql> DELETE FROM instructor
+    -> WHERE dept_name = 'Music' AND salary = 18000;
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`university`.`teaches`, CONSTRAINT `teaches_ibfk_1` FOREIGN KEY (`Id`) REFERENCES `instructor` (`Id`))
+mysql> DELETE FROM instructor
+    -> WHERE dept_name = 'Geology';
+Query OK, 1 row affected (0.00 sec)
+
+mysql> DELETE FROM department
+    -> WHERE dept_name = 'Geology' AND budget = 15000;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM department;
++------------------+------------------+----------+
+| dept_name        | building         | budget   |
++------------------+------------------+----------+
+| Biology          | Biology Building | 30000.00 |
+| Computer Science | CS Building      | 50000.00 |
+| Music            | Music Building   | 12000.00 |
+| Physics          | Physics Building | 25000.00 |
++------------------+------------------+----------+
+4 rows in set (0.00 sec)
+
+mysql> DELETE FROM instructor
+    -> WHERE dept_name = 'Music' AND salary = 18000;
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`university`.`teaches`, CONSTRAINT `teaches_ibfk_1` FOREIGN KEY (`Id`) REFERENCES `instructor` (`Id`))
+mysql> SELECT * FROM instructor;
++------+----------------+------------------+-----------+
+| Id   | name           | dept_name        | salary    |
++------+----------------+------------------+-----------+
+| 1001 | Alice Johnson  | Physics          |  95000.00 |
+| 1002 | Bob Smith      | Physics          |  88000.00 |
+| 2001 | Charles Darwin | Biology          |  91000.00 |
+| 2002 | Diana Prince   | Biology          | 105000.00 |
+| 3001 | Evan Turner    | Computer Science | 100000.00 |
+| 3002 | Fay Jackson    | Computer Science | 120000.00 |
+| 4001 | Grace Hopper   | Music            |  18000.00 |
++------+----------------+------------------+-----------+
+7 rows in set (0.00 sec)
+
