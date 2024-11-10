@@ -1,0 +1,315 @@
+mysql> CREATE DATABASE VehicleRecords;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE VehicleRecords;
+Database changed
+mysql> CREATE TABLE person (
+    ->     driver_id INT PRIMARY KEY,
+    ->     name VARCHAR(100),
+    ->     address VARCHAR(255)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> desc person;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| driver_id | int          | NO   | PRI | NULL    |       |
+| name      | varchar(100) | YES  |     | NULL    |       |
+| address   | varchar(255) | YES  |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> CREATE TABLE car (
+    ->     license VARCHAR(15) PRIMARY KEY,
+    ->     nm VARCHAR(100),
+    ->     model VARCHAR(50),
+    ->     year INT
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> desc car;
++---------+--------------+------+-----+---------+-------+
+| Field   | Type         | Null | Key | Default | Extra |
++---------+--------------+------+-----+---------+-------+
+| license | varchar(15)  | NO   | PRI | NULL    |       |
+| nm      | varchar(100) | YES  |     | NULL    |       |
+| model   | varchar(50)  | YES  |     | NULL    |       |
+| year    | int          | YES  |     | NULL    |       |
++---------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> CREATE TABLE owns (
+    ->     driver_id INT,
+    ->     license VARCHAR(15),
+    ->     PRIMARY KEY (driver_id, license),
+    ->     FOREIGN KEY (driver_id) REFERENCES person(driver_id),
+    ->     FOREIGN KEY (license) REFERENCES car(license)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> desc owns;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| driver_id | int         | NO   | PRI | NULL    |       |
+| license   | varchar(15) | NO   | PRI | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> CREATE TABLE participated (
+    ->     driver_id INT,
+    ->     license VARCHAR(15),
+    ->     report_number INT,
+    ->     damage_amount DECIMAL(10, 2),
+    ->     PRIMARY KEY (driver_id, license, report_number),
+    ->     FOREIGN KEY (driver_id) REFERENCES person(driver_id),
+    ->     FOREIGN KEY (license) REFERENCES car(license),
+    ->     FOREIGN KEY (report_number) REFERENCES accident(report_no)
+    -> );
+ERROR 1824 (HY000): Failed to open the referenced table 'accident'
+mysql> desc participated;
+ERROR 1146 (42S02): Table 'vehiclerecords.participated' doesn't exist
+mysql> CREATE TABLE accident (
+    ->     report_no INT PRIMARY KEY,
+    ->     date DATE,
+    ->     location VARCHAR(255)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc accident;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| report_no | int          | NO   | PRI | NULL    |       |
+| date      | date         | YES  |     | NULL    |       |
+| location  | varchar(255) | YES  |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> CREATE TABLE participated (
+    ->     driver_id INT,
+    ->     license VARCHAR(15),
+    ->     report_number INT,
+    ->     damage_amount DECIMAL(10, 2),
+    ->     PRIMARY KEY (driver_id, license, report_number),
+    ->     FOREIGN KEY (driver_id) REFERENCES person(driver_id),
+    ->     FOREIGN KEY (license) REFERENCES car(license),
+    ->     FOREIGN KEY (report_number) REFERENCES accident(report_no)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> desc participated;
++---------------+---------------+------+-----+---------+-------+
+| Field         | Type          | Null | Key | Default | Extra |
++---------------+---------------+------+-----+---------+-------+
+| driver_id     | int           | NO   | PRI | NULL    |       |
+| license       | varchar(15)   | NO   | PRI | NULL    |       |
+| report_number | int           | NO   | PRI | NULL    |       |
+| damage_amount | decimal(10,2) | YES  |     | NULL    |       |
++---------------+---------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> INSERT INTO person (driver_id, name, address) VALUES
+    ->     (1, 'John Doe', '123 Maple St'),
+    ->     (2, 'Jane Smith', '456 Oak Ave'),
+    ->     (3, 'Alice Johnson', '789 Pine Rd'),
+    ->     (4, 'Bob Brown', '101 Birch Blvd'),
+    ->     (5, 'Charlie Green', '202 Cedar St'),
+    ->     (6, 'Diana Prince', '303 Spruce Ln');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM person;
++-----------+---------------+----------------+
+| driver_id | name          | address        |
++-----------+---------------+----------------+
+|         1 | John Doe      | 123 Maple St   |
+|         2 | Jane Smith    | 456 Oak Ave    |
+|         3 | Alice Johnson | 789 Pine Rd    |
+|         4 | Bob Brown     | 101 Birch Blvd |
+|         5 | Charlie Green | 202 Cedar St   |
+|         6 | Diana Prince  | 303 Spruce Ln  |
++-----------+---------------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO car (license, nm, model, year) VALUES
+    ->     ('ABC123', 'Toyota', 'Corolla', 2018),
+    ->     ('XYZ456', 'Honda', 'Civic', 2020),
+    ->     ('LMN789', 'Ford', 'Focus', 2019),
+    ->     ('PQR234', 'Chevrolet', 'Malibu', 2017),
+    ->     ('TUV567', 'Nissan', 'Sentra', 2021),
+    ->     ('JKL890', 'BMW', 'X5', 2022);
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM car;
++---------+-----------+---------+------+
+| license | nm        | model   | year |
++---------+-----------+---------+------+
+| ABC123  | Toyota    | Corolla | 2018 |
+| JKL890  | BMW       | X5      | 2022 |
+| LMN789  | Ford      | Focus   | 2019 |
+| PQR234  | Chevrolet | Malibu  | 2017 |
+| TUV567  | Nissan    | Sentra  | 2021 |
+| XYZ456  | Honda     | Civic   | 2020 |
++---------+-----------+---------+------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO owns (driver_id, license) VALUES
+    ->     (1, 'ABC123'),
+    ->     (2, 'XYZ456'),
+    ->     (3, 'LMN789'),
+    ->     (4, 'PQR234'),
+    ->     (5, 'TUV567'),
+    ->     (6, 'JKL890');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM owns;
++-----------+---------+
+| driver_id | license |
++-----------+---------+
+|         1 | ABC123  |
+|         6 | JKL890  |
+|         3 | LMN789  |
+|         4 | PQR234  |
+|         5 | TUV567  |
+|         2 | XYZ456  |
++-----------+---------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO accident (report_no, date, location) VALUES
+    ->     (101, '2023-01-10', 'Main St & 1st Ave'),
+    ->     (102, '2023-02-15', 'Elm St & 5th Ave'),
+    ->     (103, '2023-03-20', 'Maple St & 2nd Ave'),
+    ->     (104, '2023-04-25', 'Pine Rd & 3rd Ave'),
+    ->     (105, '2023-05-30', 'Oak Ave & 6th Ave'),
+    ->     (106, '2023-06-05', 'Cedar St & 7th Ave');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM accident;
++-----------+------------+--------------------+
+| report_no | date       | location           |
++-----------+------------+--------------------+
+|       101 | 2023-01-10 | Main St & 1st Ave  |
+|       102 | 2023-02-15 | Elm St & 5th Ave   |
+|       103 | 2023-03-20 | Maple St & 2nd Ave |
+|       104 | 2023-04-25 | Pine Rd & 3rd Ave  |
+|       105 | 2023-05-30 | Oak Ave & 6th Ave  |
+|       106 | 2023-06-05 | Cedar St & 7th Ave |
++-----------+------------+--------------------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO participated (driver_id, license, report_number, damage_amount) VALUES
+    ->     (1, 'ABC123', 101, 2000.50),
+    ->     (2, 'XYZ456', 102, 1500.00),
+    ->     (3, 'LMN789', 103, 3000.75),
+    ->     (4, 'PQR234', 104, 500.25),
+    ->     (5, 'TUV567', 105, 750.60),
+    ->     (6, 'JKL890', 106, 1000.90);
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM participated;
++-----------+---------+---------------+---------------+
+| driver_id | license | report_number | damage_amount |
++-----------+---------+---------------+---------------+
+|         1 | ABC123  |           101 |       2000.50 |
+|         2 | XYZ456  |           102 |       1500.00 |
+|         3 | LMN789  |           103 |       3000.75 |
+|         4 | PQR234  |           104 |        500.25 |
+|         5 | TUV567  |           105 |        750.60 |
+|         6 | JKL890  |           106 |       1000.90 |
++-----------+---------+---------------+---------------+
+6 rows in set (0.00 sec)
+
+mysql> CREATE INDEX idx_license ON car(license);
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_driver_id ON person(driver_id);
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM person;
++--------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table  | Non_unique | Key_name      | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++--------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| person |          0 | PRIMARY       |            1 | driver_id   | A         |           6 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| person |          1 | idx_driver_id |            1 | driver_id   | A         |           6 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++--------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+2 rows in set (0.02 sec)
+
+mysql> DROP INDEX idx_driver_id ON person;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM person;
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table  | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| person |          0 | PRIMARY  |            1 | driver_id   | A         |           6 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+1 row in set (0.01 sec)
+
+mysql> CREATE VIEW CarAccidents AS
+    -> SELECT car.license, car.nm, car.model, car.year, accident.report_no, accident.date, accident.location, participated.damage_amount
+    -> FROM car
+    -> JOIN participated ON car.license = participated.license
+    -> JOIN accident ON participated.report_number = accident.report_no;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM CarAccidents;
++---------+-----------+---------+------+-----------+------------+--------------------+---------------+
+| license | nm        | model   | year | report_no | date       | location           | damage_amount |
++---------+-----------+---------+------+-----------+------------+--------------------+---------------+
+| ABC123  | Toyota    | Corolla | 2018 |       101 | 2023-01-10 | Main St & 1st Ave  |       2000.50 |
+| JKL890  | BMW       | X5      | 2022 |       106 | 2023-06-05 | Cedar St & 7th Ave |       1000.90 |
+| LMN789  | Ford      | Focus   | 2019 |       103 | 2023-03-20 | Maple St & 2nd Ave |       3000.75 |
+| PQR234  | Chevrolet | Malibu  | 2017 |       104 | 2023-04-25 | Pine Rd & 3rd Ave  |        500.25 |
+| TUV567  | Nissan    | Sentra  | 2021 |       105 | 2023-05-30 | Oak Ave & 6th Ave  |        750.60 |
+| XYZ456  | Honda     | Civic   | 2020 |       102 | 2023-02-15 | Elm St & 5th Ave   |       1500.00 |
++---------+-----------+---------+------+-----------+------------+--------------------+---------------+
+6 rows in set (0.01 sec)
+
+mysql> CREATE VIEW PersonCarOwnership AS
+    -> SELECT person.driver_id, person.name, car.license, car.nm, car.model, car.year
+    -> FROM person
+    -> JOIN owns ON person.driver_id = owns.driver_id
+    -> JOIN car ON owns.license = car.license;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM PersonCarOwnership;
++-----------+---------------+---------+-----------+---------+------+
+| driver_id | name          | license | nm        | model   | year |
++-----------+---------------+---------+-----------+---------+------+
+|         1 | John Doe      | ABC123  | Toyota    | Corolla | 2018 |
+|         2 | Jane Smith    | XYZ456  | Honda     | Civic   | 2020 |
+|         3 | Alice Johnson | LMN789  | Ford      | Focus   | 2019 |
+|         4 | Bob Brown     | PQR234  | Chevrolet | Malibu  | 2017 |
+|         5 | Charlie Green | TUV567  | Nissan    | Sentra  | 2021 |
+|         6 | Diana Prince  | JKL890  | BMW       | X5      | 2022 |
++-----------+---------------+---------+-----------+---------+------+
+6 rows in set (0.00 sec)
+
+mysql> CREATE VIEW DriverCarInfo AS
+    -> SELECT person.name AS driver_name, car.model, car.year
+    -> FROM person
+    -> JOIN owns ON person.driver_id = owns.driver_id
+    -> JOIN car ON owns.license = car.license;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM DriverCarInfo;
++---------------+---------+------+
+| driver_name   | model   | year |
++---------------+---------+------+
+| John Doe      | Corolla | 2018 |
+| Jane Smith    | Civic   | 2020 |
+| Alice Johnson | Focus   | 2019 |
+| Bob Brown     | Malibu  | 2017 |
+| Charlie Green | Sentra  | 2021 |
+| Diana Prince  | X5      | 2022 |
++---------------+---------+------+
+6 rows in set (0.00 sec)
