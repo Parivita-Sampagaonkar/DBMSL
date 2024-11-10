@@ -1,0 +1,432 @@
+mysql> CREATE DATABASE SupplyChain;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE SupplyChain;
+Database changed
+mysql> CREATE TABLE supplier (
+    ->     suppl_no INT PRIMARY KEY,
+    ->     suppl_name VARCHAR(100),
+    ->     city VARCHAR(50),
+    ->     status INT
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc supplier;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| suppl_no   | int          | NO   | PRI | NULL    |       |
+| suppl_name | varchar(100) | YES  |     | NULL    |       |
+| city       | varchar(50)  | YES  |     | NULL    |       |
+| status     | int          | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> CREATE TABLE parts (
+    ->     part_no VARCHAR(10) PRIMARY KEY,
+    ->     part_name VARCHAR(100),
+    ->     color VARCHAR(20),
+    ->     weight DECIMAL(5, 2),
+    ->     city VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc parts;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| part_no   | varchar(10)  | NO   | PRI | NULL    |       |
+| part_name | varchar(100) | YES  |     | NULL    |       |
+| color     | varchar(20)  | YES  |     | NULL    |       |
+| weight    | decimal(5,2) | YES  |     | NULL    |       |
+| city      | varchar(50)  | YES  |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> CREATE TABLE shipment (
+    ->     suppl_no INT,
+    ->     part_no VARCHAR(10),
+    ->     quantity INT,
+    ->     FOREIGN KEY (suppl_no) REFERENCES supplier(suppl_no),
+    ->     FOREIGN KEY (part_no) REFERENCES parts(part_no)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> desc shipment;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| suppl_no | int         | YES  | MUL | NULL    |       |
+| part_no  | varchar(10) | YES  | MUL | NULL    |       |
+| quantity | int         | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> CREATE TABLE project (
+    ->     project_id INT PRIMARY KEY,
+    ->     name VARCHAR(100),
+    ->     location VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc project;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| project_id | int          | NO   | PRI | NULL    |       |
+| name       | varchar(100) | YES  |     | NULL    |       |
+| location   | varchar(50)  | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> INSERT INTO supplier (suppl_no, suppl_name, city, status) VALUES
+    ->     (1, 'Supplier A', 'Chennai', 30),
+    ->     (2, 'Supplier B', 'Mumbai', 40),
+    ->     (3, 'Supplier C', 'Pune', 25),
+    ->     (4, 'Supplier D', 'Chennai', 35),
+    ->     (5, 'Supplier E', 'Delhi', 50),
+    ->     (6, 'Supplier F', 'Bangalore', 20);
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM supplier;
++----------+------------+-----------+--------+
+| suppl_no | suppl_name | city      | status |
++----------+------------+-----------+--------+
+|        1 | Supplier A | Chennai   |     30 |
+|        2 | Supplier B | Mumbai    |     40 |
+|        3 | Supplier C | Pune      |     25 |
+|        4 | Supplier D | Chennai   |     35 |
+|        5 | Supplier E | Delhi     |     50 |
+|        6 | Supplier F | Bangalore |     20 |
++----------+------------+-----------+--------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO parts (part_no, part_name, color, weight, city) VALUES
+    ->     ('P1', 'Part A', 'Red', 5.5, 'Chennai'),
+    ->     ('P2', 'Part B', 'Blue', 3.2, 'Mumbai'),
+    ->     ('P3', 'Part C', 'Green', 4.0, 'Pune'),
+    ->     ('P4', 'Part D', 'Red', 2.8, 'Delhi'),
+    ->     ('P5', 'Part E', 'Blue', 6.1, 'Bangalore'),
+    ->     ('P6', 'Part F', 'Yellow', 5.0, 'Chennai');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM parts;
++---------+-----------+--------+--------+-----------+
+| part_no | part_name | color  | weight | city      |
++---------+-----------+--------+--------+-----------+
+| P1      | Part A    | Red    |   5.50 | Chennai   |
+| P2      | Part B    | Blue   |   3.20 | Mumbai    |
+| P3      | Part C    | Green  |   4.00 | Pune      |
+| P4      | Part D    | Red    |   2.80 | Delhi     |
+| P5      | Part E    | Blue   |   6.10 | Bangalore |
+| P6      | Part F    | Yellow |   5.00 | Chennai   |
++---------+-----------+--------+--------+-----------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO shipment (suppl_no, part_no, quantity) VALUES
+    ->     (1, 'P1', 100),
+    ->     (2, 'P2', 200),
+    ->     (3, 'P3', 150),
+    ->     (4, 'P4', 100),
+    ->     (5, 'P5', 250),
+    ->     (6, 'P6', 300);
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM shipment;
++----------+---------+----------+
+| suppl_no | part_no | quantity |
++----------+---------+----------+
+|        1 | P1      |      100 |
+|        2 | P2      |      200 |
+|        3 | P3      |      150 |
+|        4 | P4      |      100 |
+|        5 | P5      |      250 |
+|        6 | P6      |      300 |
++----------+---------+----------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO project (project_id, name, location) VALUES
+    ->     (101, 'Project X', 'Chennai'),
+    ->     (102, 'Project Y', 'Mumbai'),
+    ->     (103, 'Project Z', 'Delhi'),
+    ->     (104, 'Project W', 'Pune'),
+    ->     (105, 'Project V', 'Bangalore'),
+    ->     (106, 'Project U', 'Chennai');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM project;
++------------+-----------+-----------+
+| project_id | name      | location  |
++------------+-----------+-----------+
+|        101 | Project X | Chennai   |
+|        102 | Project Y | Mumbai    |
+|        103 | Project Z | Delhi     |
+|        104 | Project W | Pune      |
+|        105 | Project V | Bangalore |
+|        106 | Project U | Chennai   |
++------------+-----------+-----------+
+6 rows in set (0.00 sec)
+
+mysql> CREATE INDEX idx_suppl_no ON supplier(suppl_no);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE INDEX idx_suppl_name ON supplier(suppl_name);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM supplier;
++----------+------------+----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name       | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| supplier |          0 | PRIMARY        |            1 | suppl_no    | A         |           6 |     NULL |   NULL |
+   | BTREE      |         |               | YES     | NULL       |
+| supplier |          1 | idx_suppl_no   |            1 | suppl_no    | A         |           6 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| supplier |          1 | idx_suppl_name |            1 | suppl_name  | A         |           6 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++----------+------------+----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+3 rows in set (0.01 sec)
+
+mysql> DROP INDEX idx_suppl_name ON supplier;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM supplier;
++----------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name     | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| supplier |          0 | PRIMARY      |            1 | suppl_no    | A         |           6 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| supplier |          1 | idx_suppl_no |            1 | suppl_no    | A         |           6 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++----------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+2 rows in set (0.00 sec)
+
+mysql> CREATE VIEW ChennaiSuppliers AS
+    -> SELECT * FROM supplier WHERE city = 'Chennai' AND status > 25;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> INSERT INTO ChennaiSuppliers (suppl_no, suppl_name, city, status)
+    -> VALUES (7, 'Supplier G', 'Chennai', 30);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM ChennaiSuppliers;
++----------+------------+---------+--------+
+| suppl_no | suppl_name | city    | status |
++----------+------------+---------+--------+
+|        1 | Supplier A | Chennai |     30 |
+|        4 | Supplier D | Chennai |     35 |
+|        7 | Supplier G | Chennai |     30 |
++----------+------------+---------+--------+
+3 rows in set (0.00 sec)
+
+mysql> CREATE VIEW suppl_pune AS
+    -> SELECT *
+    -> FROM supplier
+    -> WHERE city = 'Pune';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM suppl_pune;
++----------+------------+------+--------+
+| suppl_no | suppl_name | city | status |
++----------+------------+------+--------+
+|        3 | Supplier C | Pune |     25 |
++----------+------------+------+--------+
+1 row in set (0.00 sec)
+
+mysql> DROP VIEW IF EXISTS suppl_pune;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM suppl_pune;
+ERROR 1146 (42S02): Table 'supplychain.suppl_pune' doesn't exist
+mysql> SELECT supplier.suppl_no, supplier.suppl_name, parts.part_no, parts.part_name
+    -> FROM supplier
+    -> INNER JOIN parts ON supplier.city = parts.city;
++----------+------------+---------+-----------+
+| suppl_no | suppl_name | part_no | part_name |
++----------+------------+---------+-----------+
+|        1 | Supplier A | P6      | Part F    |
+|        1 | Supplier A | P1      | Part A    |
+|        2 | Supplier B | P2      | Part B    |
+|        3 | Supplier C | P3      | Part C    |
+|        4 | Supplier D | P6      | Part F    |
+|        4 | Supplier D | P1      | Part A    |
+|        5 | Supplier E | P4      | Part D    |
+|        6 | Supplier F | P5      | Part E    |
+|        7 | Supplier G | P6      | Part F    |
+|        7 | Supplier G | P1      | Part A    |
++----------+------------+---------+-----------+
+10 rows in set (0.01 sec)
+
+mysql> SELECT shipment.suppl_no, shipment.part_no, project.project_id, project.name
+    -> FROM shipment
+    -> LEFT JOIN project ON shipment.suppl_no = project.project_id;
++----------+---------+------------+------+
+| suppl_no | part_no | project_id | name |
++----------+---------+------------+------+
+|        1 | P1      |       NULL | NULL |
+|        2 | P2      |       NULL | NULL |
+|        3 | P3      |       NULL | NULL |
+|        4 | P4      |       NULL | NULL |
+|        5 | P5      |       NULL | NULL |
+|        6 | P6      |       NULL | NULL |
++----------+---------+------------+------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT shipment.suppl_no, shipment.part_no, project.project_id, project.name
+    -> FROM shipment
+    -> RIGHT JOIN project ON shipment.suppl_no = project.project_id;
++----------+---------+------------+-----------+
+| suppl_no | part_no | project_id | name      |
++----------+---------+------------+-----------+
+|     NULL | NULL    |        101 | Project X |
+|     NULL | NULL    |        102 | Project Y |
+|     NULL | NULL    |        103 | Project Z |
+|     NULL | NULL    |        104 | Project W |
+|     NULL | NULL    |        105 | Project V |
+|     NULL | NULL    |        106 | Project U |
++----------+---------+------------+-----------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM supplier NATURAL JOIN parts WHERE supplier.city = parts.city;
++-----------+----------+------------+--------+---------+-----------+--------+--------+
+| city      | suppl_no | suppl_name | status | part_no | part_name | color  | weight |
++-----------+----------+------------+--------+---------+-----------+--------+--------+
+| Chennai   |        1 | Supplier A |     30 | P6      | Part F    | Yellow |   5.00 |
+| Chennai   |        1 | Supplier A |     30 | P1      | Part A    | Red    |   5.50 |
+| Mumbai    |        2 | Supplier B |     40 | P2      | Part B    | Blue   |   3.20 |
+| Pune      |        3 | Supplier C |     25 | P3      | Part C    | Green  |   4.00 |
+| Chennai   |        4 | Supplier D |     35 | P6      | Part F    | Yellow |   5.00 |
+| Chennai   |        4 | Supplier D |     35 | P1      | Part A    | Red    |   5.50 |
+| Delhi     |        5 | Supplier E |     50 | P4      | Part D    | Red    |   2.80 |
+| Bangalore |        6 | Supplier F |     20 | P5      | Part E    | Blue   |   6.10 |
+| Chennai   |        7 | Supplier G |     30 | P6      | Part F    | Yellow |   5.00 |
+| Chennai   |        7 | Supplier G |     30 | P1      | Part A    | Red    |   5.50 |
++-----------+----------+------------+--------+---------+-----------+--------+--------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT * FROM shipment NATURAL LEFT JOIN project;
++----------+---------+----------+------------+-----------+-----------+
+| suppl_no | part_no | quantity | project_id | name      | location  |
++----------+---------+----------+------------+-----------+-----------+
+|        1 | P1      |      100 |        106 | Project U | Chennai   |
+|        1 | P1      |      100 |        105 | Project V | Bangalore |
+|        1 | P1      |      100 |        104 | Project W | Pune      |
+|        1 | P1      |      100 |        103 | Project Z | Delhi     |
+|        1 | P1      |      100 |        102 | Project Y | Mumbai    |
+|        1 | P1      |      100 |        101 | Project X | Chennai   |
+|        2 | P2      |      200 |        106 | Project U | Chennai   |
+|        2 | P2      |      200 |        105 | Project V | Bangalore |
+|        2 | P2      |      200 |        104 | Project W | Pune      |
+|        2 | P2      |      200 |        103 | Project Z | Delhi     |
+|        2 | P2      |      200 |        102 | Project Y | Mumbai    |
+|        2 | P2      |      200 |        101 | Project X | Chennai   |
+|        3 | P3      |      150 |        106 | Project U | Chennai   |
+|        3 | P3      |      150 |        105 | Project V | Bangalore |
+|        3 | P3      |      150 |        104 | Project W | Pune      |
+|        3 | P3      |      150 |        103 | Project Z | Delhi     |
+|        3 | P3      |      150 |        102 | Project Y | Mumbai    |
+|        3 | P3      |      150 |        101 | Project X | Chennai   |
+|        4 | P4      |      100 |        106 | Project U | Chennai   |
+|        4 | P4      |      100 |        105 | Project V | Bangalore |
+|        4 | P4      |      100 |        104 | Project W | Pune      |
+|        4 | P4      |      100 |        103 | Project Z | Delhi     |
+|        4 | P4      |      100 |        102 | Project Y | Mumbai    |
+|        4 | P4      |      100 |        101 | Project X | Chennai   |
+|        5 | P5      |      250 |        106 | Project U | Chennai   |
+|        5 | P5      |      250 |        105 | Project V | Bangalore |
+|        5 | P5      |      250 |        104 | Project W | Pune      |
+|        5 | P5      |      250 |        103 | Project Z | Delhi     |
+|        5 | P5      |      250 |        102 | Project Y | Mumbai    |
+|        5 | P5      |      250 |        101 | Project X | Chennai   |
+|        6 | P6      |      300 |        106 | Project U | Chennai   |
+|        6 | P6      |      300 |        105 | Project V | Bangalore |
+|        6 | P6      |      300 |        104 | Project W | Pune      |
+|        6 | P6      |      300 |        103 | Project Z | Delhi     |
+|        6 | P6      |      300 |        102 | Project Y | Mumbai    |
+|        6 | P6      |      300 |        101 | Project X | Chennai   |
++----------+---------+----------+------------+-----------+-----------+
+36 rows in set (0.00 sec)
+
+mysql> SELECT * FROM shipment NATURAL RIGHT JOIN project;
++------------+-----------+-----------+----------+---------+----------+
+| project_id | name      | location  | suppl_no | part_no | quantity |
++------------+-----------+-----------+----------+---------+----------+
+|        101 | Project X | Chennai   |        6 | P6      |      300 |
+|        101 | Project X | Chennai   |        5 | P5      |      250 |
+|        101 | Project X | Chennai   |        4 | P4      |      100 |
+|        101 | Project X | Chennai   |        3 | P3      |      150 |
+|        101 | Project X | Chennai   |        2 | P2      |      200 |
+|        101 | Project X | Chennai   |        1 | P1      |      100 |
+|        102 | Project Y | Mumbai    |        6 | P6      |      300 |
+|        102 | Project Y | Mumbai    |        5 | P5      |      250 |
+|        102 | Project Y | Mumbai    |        4 | P4      |      100 |
+|        102 | Project Y | Mumbai    |        3 | P3      |      150 |
+|        102 | Project Y | Mumbai    |        2 | P2      |      200 |
+|        102 | Project Y | Mumbai    |        1 | P1      |      100 |
+|        103 | Project Z | Delhi     |        6 | P6      |      300 |
+|        103 | Project Z | Delhi     |        5 | P5      |      250 |
+|        103 | Project Z | Delhi     |        4 | P4      |      100 |
+|        103 | Project Z | Delhi     |        3 | P3      |      150 |
+|        103 | Project Z | Delhi     |        2 | P2      |      200 |
+|        103 | Project Z | Delhi     |        1 | P1      |      100 |
+|        104 | Project W | Pune      |        6 | P6      |      300 |
+|        104 | Project W | Pune      |        5 | P5      |      250 |
+|        104 | Project W | Pune      |        4 | P4      |      100 |
+|        104 | Project W | Pune      |        3 | P3      |      150 |
+|        104 | Project W | Pune      |        2 | P2      |      200 |
+|        104 | Project W | Pune      |        1 | P1      |      100 |
+|        105 | Project V | Bangalore |        6 | P6      |      300 |
+|        105 | Project V | Bangalore |        5 | P5      |      250 |
+|        105 | Project V | Bangalore |        4 | P4      |      100 |
+|        105 | Project V | Bangalore |        3 | P3      |      150 |
+|        105 | Project V | Bangalore |        2 | P2      |      200 |
+|        105 | Project V | Bangalore |        1 | P1      |      100 |
+|        106 | Project U | Chennai   |        6 | P6      |      300 |
+|        106 | Project U | Chennai   |        5 | P5      |      250 |
+|        106 | Project U | Chennai   |        4 | P4      |      100 |
+|        106 | Project U | Chennai   |        3 | P3      |      150 |
+|        106 | Project U | Chennai   |        2 | P2      |      200 |
+|        106 | Project U | Chennai   |        1 | P1      |      100 |
++------------+-----------+-----------+----------+---------+----------+
+36 rows in set (0.00 sec)
+
+mysql> SELECT supplier.*
+    -> FROM supplier
+    -> JOIN shipment ON supplier.suppl_no = shipment.suppl_no
+    -> WHERE shipment.part_no = 'P2';
++----------+------------+--------+--------+
+| suppl_no | suppl_name | city   | status |
++----------+------------+--------+--------+
+|        2 | Supplier B | Mumbai |     40 |
++----------+------------+--------+--------+
+1 row in set (0.00 sec)
+
+mysql> SELECT DISTINCT supplier.suppl_name
+    -> FROM supplier
+    -> JOIN shipment ON supplier.suppl_no = shipment.suppl_no
+    -> JOIN parts ON shipment.part_no = parts.part_no
+    -> WHERE parts.color = 'Red';
++------------+
+| suppl_name |
++------------+
+| Supplier A |
+| Supplier D |
++------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT part_no, SUM(quantity) AS total_quantity
+    -> FROM shipment
+    -> GROUP BY part_no;
++---------+----------------+
+| part_no | total_quantity |
++---------+----------------+
+| P1      |            100 |
+| P2      |            200 |
+| P3      |            150 |
+| P4      |            100 |
+| P5      |            250 |
+| P6      |            300 |
++---------+----------------+
+6 rows in set (0.00 sec)
