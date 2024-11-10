@@ -1,0 +1,123 @@
+mysql> CREATE DATABASE StudentResults;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE StudentResults;
+Database changed
+mysql> CREATE TABLE Stud_Marks (
+    ->     Roll INT PRIMARY KEY,
+    ->     Name VARCHAR(100),
+    ->     Total_Marks INT
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> desc Stud_Marks;
++-------------+--------------+------+-----+---------+-------+
+| Field       | Type         | Null | Key | Default | Extra |
++-------------+--------------+------+-----+---------+-------+
+| Roll        | int          | NO   | PRI | NULL    |       |
+| Name        | varchar(100) | YES  |     | NULL    |       |
+| Total_Marks | int          | YES  |     | NULL    |       |
++-------------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> CREATE TABLE Result (
+    ->     Roll INT PRIMARY KEY,
+    ->     Name VARCHAR(100),
+    ->     Class VARCHAR(50),
+    ->     FOREIGN KEY (Roll) REFERENCES Stud_Marks(Roll)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc Result;
++-------+--------------+------+-----+---------+-------+
+| Field | Type         | Null | Key | Default | Extra |
++-------+--------------+------+-----+---------+-------+
+| Roll  | int          | NO   | PRI | NULL    |       |
+| Name  | varchar(100) | YES  |     | NULL    |       |
+| Class | varchar(50)  | YES  |     | NULL    |       |
++-------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> INSERT INTO Stud_Marks (Roll, Name, Total_Marks) VALUES
+    ->     (101, 'Alice', 1450),
+    ->     (102, 'Bob', 980),
+    ->     (103, 'Charlie', 915),
+    ->     (104, 'David', 880),
+    ->     (105, 'Eva', 840);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Stud_Marks;
++------+---------+-------------+
+| Roll | Name    | Total_Marks |
++------+---------+-------------+
+|  101 | Alice   |        1450 |
+|  102 | Bob     |         980 |
+|  103 | Charlie |         915 |
+|  104 | David   |         880 |
+|  105 | Eva     |         840 |
++------+---------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE proc_Grade()
+    -> BEGIN
+    ->     DECLARE grade VARCHAR(50);
+    ->
+    ->     -- Cursor to iterate through each student and categorize based on marks
+    ->     DECLARE done INT DEFAULT FALSE;
+    ->     DECLARE student_roll INT;
+    ->     DECLARE student_name VARCHAR(100);
+    ->     DECLARE student_marks INT;
+    ->     DECLARE student_cursor CURSOR FOR SELECT Roll, Name, Total_Marks FROM Stud_Marks;
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    ->
+    ->     -- Open the cursor and categorize each student
+    ->     OPEN student_cursor;
+    ->     FETCH student_cursor INTO student_roll, student_name, student_marks;
+    ->
+    ->     WHILE NOT done DO
+    ->         IF student_marks BETWEEN 990 AND 1500 THEN
+    ->             SET grade = 'Distinction';
+    ->         ELSEIF student_marks BETWEEN 900 AND 989 THEN
+    ->             SET grade = 'First Class';
+    ->         ELSEIF student_marks BETWEEN 825 AND 899 THEN
+    ->             SET grade = 'Higher Second Class';
+    ->         ELSE
+    ->             SET grade = 'No Category';
+    ->         END IF;
+    ->
+    ->         -- Insert the result into the Result table
+    ->         INSERT INTO Result (Roll, Name, Class) VALUES (student_roll, student_name, grade)
+    ->         ON DUPLICATE KEY UPDATE Class = grade;
+    ->
+    ->         FETCH student_cursor INTO student_roll, student_name, student_marks;
+    ->     END WHILE;
+    ->
+    ->     -- Close the cursor
+    ->     CLOSE student_cursor;
+    -> END //
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> BEGIN
+    ->     CALL proc_Grade();
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'CALL proc_Grade()' at line 2
+mysql> END;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'END' at line 1
+mysql> CALL proc_Grade();
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> SELECT * FROM Result;
++------+---------+---------------------+
+| Roll | Name    | Class               |
++------+---------+---------------------+
+|  101 | Alice   | Distinction         |
+|  102 | Bob     | First Class         |
+|  103 | Charlie | First Class         |
+|  104 | David   | Higher Second Class |
+|  105 | Eva     | Higher Second Class |
++------+---------+---------------------+
+5 rows in set (0.00 sec)
