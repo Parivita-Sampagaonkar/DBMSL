@@ -1,0 +1,41 @@
+test> use salesDB
+switched to db salesDB
+salesDB> db.orders.insertMany([
+...     { product_id: 1, item: "Apple", quantity: 10 },
+...     { product_id: 2, item: "Banana", quantity: 20 },
+...     { product_id: 3, item: "Orange", quantity: 15 },
+...     { product_id: 4, item: "Apple", quantity: 5 },
+...     { product_id: 5, item: "Banana", quantity: 10 }
+... ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('67316c7da2886e804c0d8190'),
+    '1': ObjectId('67316c7da2886e804c0d8191'),
+    '2': ObjectId('67316c7da2886e804c0d8192'),
+    '3': ObjectId('67316c7da2886e804c0d8193'),
+    '4': ObjectId('67316c7da2886e804c0d8194')
+  }
+}
+salesDB> var mapFunction = function() {
+...     emit(this.item, this.quantity);
+... };
+
+salesDB> var reduceFunction = function(key, values) {
+...     return Array.sum(values);
+... };
+
+salesDB> db.orders.mapReduce(
+...     mapFunction,
+...     reduceFunction,
+...     { out: "totalQuantities" }
+... )
+DeprecationWarning: Collection.mapReduce() is deprecated. Use an aggregation instead.
+See https://docs.mongodb.com/manual/core/map-reduce for details.
+{ result: 'totalQuantities', ok: 1 }
+salesDB> db.totalQuantities.find()
+[
+  { _id: 'Apple', value: 15 },
+  { _id: 'Banana', value: 30 },
+  { _id: 'Orange', value: 15 }
+]
