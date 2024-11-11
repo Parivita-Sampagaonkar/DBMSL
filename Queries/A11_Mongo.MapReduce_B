@@ -1,0 +1,29 @@
+use salesDB
+
+1. Create the orders Collection and Insert Sample Data
+db.orders.insertMany([
+    { product_id: 1, item: "Apple", quantity: 10 },
+    { product_id: 2, item: "Banana", quantity: 20 },
+    { product_id: 3, item: "Orange", quantity: 15 },
+    { product_id: 4, item: "Apple", quantity: 5 },
+    { product_id: 5, item: "Banana", quantity: 10 }
+])
+
+2. Write a Map Function to Emit Values of Item and Quantity
+var mapFunction = function() {
+    emit(this.item, this.quantity);
+};
+
+3. Write a Reduce Function to Sum Total Quantities
+var reduceFunction = function(key, values) {
+    return Array.sum(values);
+};
+
+4. Perform Map-Reduce Operation Using the Map and Reduce Functions
+db.orders.mapReduce(
+    mapFunction,
+    reduceFunction,
+    { out: "totalQuantities" }
+)
+
+-db.totalQuantities.find()
