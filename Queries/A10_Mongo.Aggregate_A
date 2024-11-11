@@ -1,0 +1,55 @@
+use companyDB
+
+db.employee.insertMany([
+    { employee_id: 1, name: "Alice", department: "HR", salary: 45000, age: 30 },
+    { employee_id: 2, name: "Bob", department: "Finance", salary: 55000, age: 40 },
+    { employee_id: 3, name: "Charlie", department: "IT", salary: 60000, age: 28 },
+    { employee_id: 4, name: "David", department: "IT", salary: 39000, age: 25 },
+    { employee_id: 5, name: "Eve", department: "HR", salary: 70000, age: 35 }
+])
+
+1. Find Employee Names and Use explain
+db.employee.find({}).projection({ name: 1, _id: 0 }).explain("executionStats")
+
+2. Create an Index on Employee Name
+db.employee.createIndex({ name: 1 })
+
+3. Search for a Name (xyz) Using explain
+db.employee.find({ name: "xyz" }).explain("executionStats")
+
+4. Create an Index on Department Name
+db.employee.createIndex({ department: 1 })
+
+5. List All System Indexes
+db.employee.getIndexes()
+
+6. Drop Index on Department Name
+db.employee.dropIndex({ department: 1 })
+
+7. Aggregation: Sort Employee Collection by Employee Name
+db.employee.aggregate([
+    { $sort: { name: 1 } }
+])
+
+8. Aggregation: Match a Particular Department and Group by Class and Name
+db.employee.aggregate([
+    { $match: { department: "IT" } },
+    { $group: { _id: { department: "$department", name: "$name" }, count: { $sum: 1 } } }
+])
+
+9. Find Employees with Salary Between 40000 and 60000
+db.employee.find({ salary: { $gte: 40000, $lte: 60000 } })
+
+10. Aggregation: Find Minimum and Maximum Salary
+db.employee.aggregate([
+    {
+        $group: {
+            _id: null,
+            minSalary: { $min: "$salary" },
+            maxSalary: { $max: "$salary" }
+        }
+    }
+])
+
+11. Project Only Two Keys from Each Document
+db.employee.find({}, { name: 1, salary: 1, _id: 0 })
