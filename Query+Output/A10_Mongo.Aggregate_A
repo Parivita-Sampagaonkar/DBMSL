@@ -1,0 +1,314 @@
+test> use companyDB
+switched to db companyDB
+companyDB> db.employee.insertMany([
+...     { employee_id: 1, name: "Alice", department: "HR", salary: 45000, age: 30 },
+...     { employee_id: 2, name: "Bob", department: "Finance", salary: 55000, age: 40 },
+...     { employee_id: 3, name: "Charlie", department: "IT", salary: 60000, age: 28 },
+...     { employee_id: 4, name: "David", department: "IT", salary: 39000, age: 25 },
+...     { employee_id: 5, name: "Eve", department: "HR", salary: 70000, age: 35 }
+... ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('673169fa3a601eb74b0d8190'),
+    '1': ObjectId('673169fa3a601eb74b0d8191'),
+    '2': ObjectId('673169fa3a601eb74b0d8192'),
+    '3': ObjectId('673169fa3a601eb74b0d8193'),
+    '4': ObjectId('673169fa3a601eb74b0d8194')
+  }
+}
+companyDB> db.employee.find({}).projection({ name: 1, _id: 0 }).explain("executionStats")
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'companyDB.employee',
+    parsedQuery: {},
+    indexFilterSet: false,
+    queryHash: 'AEA9BEEE',
+    planCacheKey: 'DA01F1EE',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'PROJECTION_SIMPLE',
+      transformBy: { name: 1, _id: 0 },
+      inputStage: { stage: 'COLLSCAN', direction: 'forward' }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 5,
+    executionTimeMillis: 0,
+    totalKeysExamined: 0,
+    totalDocsExamined: 5,
+    executionStages: {
+      isCached: false,
+      stage: 'PROJECTION_SIMPLE',
+      nReturned: 5,
+      executionTimeMillisEstimate: 0,
+      works: 6,
+      advanced: 5,
+      needTime: 0,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      transformBy: { name: 1, _id: 0 },
+      inputStage: {
+        stage: 'COLLSCAN',
+        nReturned: 5,
+        executionTimeMillisEstimate: 0,
+        works: 6,
+        advanced: 5,
+        needTime: 0,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        direction: 'forward',
+        docsExamined: 5
+      }
+    }
+  },
+  command: {
+    find: 'employee',
+    filter: {},
+    projection: { name: 1, _id: 0 },
+    '$db': 'companyDB'
+  },
+  serverInfo: {
+    host: 'PS150804LAPTOP',
+    port: 27017,
+    version: '8.0.3',
+    gitVersion: '89d97f2744a2b9851ddfb51bdf22f687562d9b06'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}
+companyDB> db.employee.createIndex({ name: 1 })
+name_1
+companyDB> db.employee.find({ name: "xyz" }).explain("executionStats")
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'companyDB.employee',
+    parsedQuery: { name: { '$eq': 'xyz' } },
+    indexFilterSet: false,
+    queryHash: '544F3E5C',
+    planCacheKey: 'EEE0759C',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'FETCH',
+      inputStage: {
+        stage: 'IXSCAN',
+        keyPattern: { name: 1 },
+        indexName: 'name_1',
+        isMultiKey: false,
+        multiKeyPaths: { name: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: { name: [ '["xyz", "xyz"]' ] }
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 0,
+    executionTimeMillis: 10,
+    totalKeysExamined: 0,
+    totalDocsExamined: 0,
+    executionStages: {
+      isCached: false,
+      stage: 'FETCH',
+      nReturned: 0,
+      executionTimeMillisEstimate: 10,
+      works: 1,
+      advanced: 0,
+      needTime: 0,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      docsExamined: 0,
+      alreadyHasObj: 0,
+      inputStage: {
+        stage: 'IXSCAN',
+        nReturned: 0,
+        executionTimeMillisEstimate: 10,
+        works: 1,
+        advanced: 0,
+        needTime: 0,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        keyPattern: { name: 1 },
+        indexName: 'name_1',
+        isMultiKey: false,
+        multiKeyPaths: { name: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: { name: [ '["xyz", "xyz"]' ] },
+        keysExamined: 0,
+        seeks: 1,
+        dupsTested: 0,
+        dupsDropped: 0
+      }
+    }
+  },
+  command: { find: 'employee', filter: { name: 'xyz' }, '$db': 'companyDB' },
+  serverInfo: {
+    host: 'PS150804LAPTOP',
+    port: 27017,
+    version: '8.0.3',
+    gitVersion: '89d97f2744a2b9851ddfb51bdf22f687562d9b06'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}
+companyDB> db.employee.createIndex({ department: 1 })
+department_1
+companyDB> db.employee.getIndexes()
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { name: 1 }, name: 'name_1' },
+  { v: 2, key: { department: 1 }, name: 'department_1' }
+]
+companyDB> db.employee.dropIndex({ department: 1 })
+{ nIndexesWas: 3, ok: 1 }
+companyDB> db.employee.aggregate([
+...     { $sort: { name: 1 } }
+... ])
+[
+  {
+    _id: ObjectId('673169fa3a601eb74b0d8190'),
+    employee_id: 1,
+    name: 'Alice',
+    department: 'HR',
+    salary: 45000,
+    age: 30
+  },
+  {
+    _id: ObjectId('673169fa3a601eb74b0d8191'),
+    employee_id: 2,
+    name: 'Bob',
+    department: 'Finance',
+    salary: 55000,
+    age: 40
+  },
+  {
+    _id: ObjectId('673169fa3a601eb74b0d8192'),
+    employee_id: 3,
+    name: 'Charlie',
+    department: 'IT',
+    salary: 60000,
+    age: 28
+  },
+  {
+    _id: ObjectId('673169fa3a601eb74b0d8193'),
+    employee_id: 4,
+    name: 'David',
+    department: 'IT',
+    salary: 39000,
+    age: 25
+  },
+  {
+    _id: ObjectId('673169fa3a601eb74b0d8194'),
+    employee_id: 5,
+    name: 'Eve',
+    department: 'HR',
+    salary: 70000,
+    age: 35
+  }
+]
+companyDB> db.employee.aggregate([
+...     { $match: { department: "IT" } },
+...     { $group: { _id: { department: "$department", name: "$name" }, count: { $sum: 1 } } }
+... ])
+[
+  { _id: { department: 'IT', name: 'Charlie' }, count: 1 },
+  { _id: { department: 'IT', name: 'David' }, count: 1 }
+]
+companyDB> db.employee.find({ salary: { $gte: 40000, $lte: 60000 } })
+[
+  {
+    _id: ObjectId('673169fa3a601eb74b0d8190'),
+    employee_id: 1,
+    name: 'Alice',
+    department: 'HR',
+    salary: 45000,
+    age: 30
+  },
+  {
+    _id: ObjectId('673169fa3a601eb74b0d8191'),
+    employee_id: 2,
+    name: 'Bob',
+    department: 'Finance',
+    salary: 55000,
+    age: 40
+  },
+  {
+    _id: ObjectId('673169fa3a601eb74b0d8192'),
+    employee_id: 3,
+    name: 'Charlie',
+    department: 'IT',
+    salary: 60000,
+    age: 28
+  }
+]
+companyDB> db.employee.aggregate([
+...     {
+...         $group: {
+...             _id: null,
+...             minSalary: { $min: "$salary" },
+...             maxSalary: { $max: "$salary" }
+...         }
+...     }
+... ])
+[ { _id: null, minSalary: 39000, maxSalary: 70000 } ]
+companyDB> db.employee.find({}, { name: 1, salary: 1, _id: 0 })
+[
+  { name: 'Alice', salary: 45000 },
+  { name: 'Bob', salary: 55000 },
+  { name: 'Charlie', salary: 60000 },
+  { name: 'David', salary: 39000 },
+  { name: 'Eve', salary: 70000 }
+]
