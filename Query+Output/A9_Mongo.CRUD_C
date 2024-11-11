@@ -1,0 +1,170 @@
+test> use collegeDB
+switched to db collegeDB
+collegeDB> show databases
+admin   40.00 KiB
+config  72.00 KiB
+local   40.00 KiB
+collegeDB> use collegeDB
+already on db collegeDB
+collegeDB> db.studentinfo.insertMany([
+...     { student_id: 1, name: "Alice", city: "Pune", address: "123 Maple Street", state: "Maharashtra", phone_numbers: [] },
+...     { student_id: 2, name: "Samar", city: "Mumbai", address: "456 Oak Avenue", state: "Maharashtra", phone_numbers: [] },
+...     { student_id: 3, name: "John", city: "Pune", address: "789 Pine Road", state: "Maharashtra", phone_numbers: [] },
+...     { student_id: 4, name: "Sara", city: "Nagpur", address: "321 Birch Blvd", state: "Maharashtra", phone_numbers: [] },
+...     { student_id: 5, name: "Mike", city: "Pune", address: "654 Cedar Lane", state: "Maharashtra", phone_numbers: [] }
+... ])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('6731671f95eeaa53d80d8190'),
+    '1': ObjectId('6731671f95eeaa53d80d8191'),
+    '2': ObjectId('6731671f95eeaa53d80d8192'),
+    '3': ObjectId('6731671f95eeaa53d80d8193'),
+    '4': ObjectId('6731671f95eeaa53d80d8194')
+  }
+}
+collegeDB> db.studentinfo.find()
+[
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8190'),
+    student_id: 1,
+    name: 'Alice',
+    city: 'Pune',
+    address: '123 Maple Street',
+    state: 'Maharashtra',
+    phone_numbers: []
+  },
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8191'),
+    student_id: 2,
+    name: 'Samar',
+    city: 'Mumbai',
+    address: '456 Oak Avenue',
+    state: 'Maharashtra',
+    phone_numbers: []
+  },
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8192'),
+    student_id: 3,
+    name: 'John',
+    city: 'Pune',
+    address: '789 Pine Road',
+    state: 'Maharashtra',
+    phone_numbers: []
+  },
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8193'),
+    student_id: 4,
+    name: 'Sara',
+    city: 'Nagpur',
+    address: '321 Birch Blvd',
+    state: 'Maharashtra',
+    phone_numbers: []
+  },
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8194'),
+    student_id: 5,
+    name: 'Mike',
+    city: 'Pune',
+    address: '654 Cedar Lane',
+    state: 'Maharashtra',
+    phone_numbers: []
+  }
+]
+collegeDB> db.studentinfo.find({ city: "Pune" })
+[
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8190'),
+    student_id: 1,
+    name: 'Alice',
+    city: 'Pune',
+    address: '123 Maple Street',
+    state: 'Maharashtra',
+    phone_numbers: []
+  },
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8192'),
+    student_id: 3,
+    name: 'John',
+    city: 'Pune',
+    address: '789 Pine Road',
+    state: 'Maharashtra',
+    phone_numbers: []
+  },
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8194'),
+    student_id: 5,
+    name: 'Mike',
+    city: 'Pune',
+    address: '654 Cedar Lane',
+    state: 'Maharashtra',
+    phone_numbers: []
+  }
+]
+collegeDB> db.studentinfo.updateOne(
+...     { student_id: 1 },
+...     { $set: { address: "123 New Maple Street" } }
+... )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+collegeDB> db.studentinfo.updateOne(
+...     { student_id: 1 },
+...     { $set: { phone_numbers: ["+911234567890", "+919876543210"] } }
+... )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+collegeDB> db.studentinfo.find({ name: /^S/ })
+[
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8191'),
+    student_id: 2,
+    name: 'Samar',
+    city: 'Mumbai',
+    address: '456 Oak Avenue',
+    state: 'Maharashtra',
+    phone_numbers: []
+  },
+  {
+    _id: ObjectId('6731671f95eeaa53d80d8193'),
+    student_id: 4,
+    name: 'Sara',
+    city: 'Nagpur',
+    address: '321 Birch Blvd',
+    state: 'Maharashtra',
+    phone_numbers: []
+  }
+]
+collegeDB> db.studentinfo.updateOne(
+...     { student_id: 5 },
+...     { $set: { name: "Michael" } }
+... )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+collegeDB> db.studentinfo.updateOne(
+...     { student_id: 3 },
+...     { $unset: { state: "" } }
+... )
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+collegeDB> db.studentinfo.deleteOne({ name: "John" })
+{ acknowledged: true, deletedCount: 1 }
