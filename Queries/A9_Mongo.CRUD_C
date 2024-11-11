@@ -1,0 +1,51 @@
+1. Create a database to store college information:
+use collegeDB
+
+2.  Show All Databases Present on the Server
+show databases
+
+3.  Insert Documents in the Collection (studentinfo)
+db.studentinfo.insertMany([
+    { student_id: 1, name: "Alice", city: "Pune", address: "123 Maple Street", state: "Maharashtra", phone_numbers: [] },
+    { student_id: 2, name: "Samar", city: "Mumbai", address: "456 Oak Avenue", state: "Maharashtra", phone_numbers: [] },
+    { student_id: 3, name: "John", city: "Pune", address: "789 Pine Road", state: "Maharashtra", phone_numbers: [] },
+    { student_id: 4, name: "Sara", city: "Nagpur", address: "321 Birch Blvd", state: "Maharashtra", phone_numbers: [] },
+    { student_id: 5, name: "Mike", city: "Pune", address: "654 Cedar Lane", state: "Maharashtra", phone_numbers: [] }
+])
+
+4. Show All Documents in studentinfo Collection
+db.studentinfo.find()
+
+5. Find Students from city = Pune
+db.studentinfo.find({ city: "Pune" })
+
+6. Update Address for student_id = 1
+db.studentinfo.updateOne(
+    { student_id: 1 },
+    { $set: { address: "123 New Maple Street" } }
+)
+
+7. Add an Array of Telephone Numbers for student_id = 1
+db.studentinfo.updateOne(
+    { student_id: 1 },
+    { $set: { phone_numbers: ["+911234567890", "+919876543210"] } }
+)
+
+8. List All Students Whose Names Start with 'S'
+db.studentinfo.find({ name: /^S/ })
+
+9. Update student_id = 5 with a New Name
+db.studentinfo.updateOne(
+    { student_id: 5 },
+    { $set: { name: "Michael" } }
+)
+
+10. Remove state Info for student_id = 3
+db.studentinfo.updateOne(
+    { student_id: 3 },
+    { $unset: { state: "" } }
+)
+
+11. Remove Document with name = "John"
+db.studentinfo.deleteOne({ name: "John" })
+
